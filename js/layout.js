@@ -1,7 +1,7 @@
 const layoutScriptUrl = document.currentScript.src;
 const appRoot = new URL("../", layoutScriptUrl);
-const gcityRepositoryId = "Tadeu-Raphael/gcity.github.io";
-const githubPagesHome = "https://tadeu-raphael.github.io/gcity.github.io/";
+const gcityRepositoryId = "Tadeu-Raphael/g-city";
+const githubPagesHome = "https://tadeu-raphael.github.io/g-city/";
 
 function loadScript(path) {
     const source = new URL(path, document.baseURI).href;
@@ -19,7 +19,7 @@ function loadScript(path) {
 function isGcityGithubPages() {
     return location.protocol === "https:"
         && location.hostname.toLowerCase() === "tadeu-raphael.github.io"
-        && /^\/gcity\.github\.io(?:\/|$)/i.test(location.pathname);
+        && /^\/g-city(?:\/|$)/i.test(location.pathname);
 }
 
 function isLocalDevelopment() {
