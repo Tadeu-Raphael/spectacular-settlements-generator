@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Spectacular Settlements Generator - Town Generator</title>
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/stylesheet.css">
+</head>
+
+<body class="towns-page towns-theme-body generation-page">
+    <div id="site-header"></div>
+    <nav class="generation-actions container d-flex justify-content-center align-items-center flex-wrap gap-2 my-4" aria-label="Ações da geração">
+        <button class="btn btn-primary generation-button reset-btn" data-i18n type="button" onclick="window.location.reload()">🎲 Roll again</button>
+        <button class="btn btn-success generation-button" data-i18n type="button" onclick="exportGeneration()">⬇ Export TXT</button>
+        <a href="index.html" class="btn btn-outline-secondary generation-button menu-button" data-i18n>← Main menu</a>
+    </nav>
+
+    <!-- Container principal com layout padronizado -->
+    <main class="generation-content borders-towns container card shadow-sm border-0 my-4 p-4 p-md-5">
+        <div class="row">
+            <div class="col">
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-0">Basic Information</h2>
+                    <h3>Origin</h3>
+                        <p id="origin"></p>
+                    <h3>Priority</h3>
+                        <p id="priority"></p>
+                    <h3>Specialty</h3>
+                        <p id="specialty"></p>
+                    <h3>Age</h3>
+                        <p id="age"></p>
+                    <h3>Size</h3>
+                        <p id="size"></p>
+                    <h3>Condition</h3>
+                        <p id="condition"></p>
+                    <h3>Environment</h3>
+                        <p id="environment"></p>
+                    <h3>Prosperity</h3>
+                        <p id="prosperity"></p>
+                    <h3>Market Square</h3>
+                        <p id="marketSquare"></p>
+                    <h3>Vendor Stall Acquisition</h3>
+                        <p id="vendorStallAcquisiton"></p>
+                    <h3>Merchant Overflow</h3>
+                        <p id="merchantOverflow"></p>
+                    <h3>Fortification</h3>
+                        <p id="fortification"></p>
+
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-5">Community</h2>
+                    <h3>Population Density</h3>
+                        <p id="populationDensity" ></p>
+                    <h3>Population Overflow</h3>
+                        <p id="populationOverflow" ></p>
+                    <h3>Farms and Resources</h3>
+                        <p id="farmsAndResources" ></p>
+                    <h3>Visitor Traffic</h3>
+                        <p id="visitorTraffic" ></p>
+                    <h3>Night Activity</h3>
+                        <p id="nightActivity" ></p>
+                    <h3>Demographics</h3>
+                        <p id="demographics" ></p>
+                    <h3>Disposition</h3>
+                        <p id="disposition" ></p>
+                    <h3>Leadership</h3>
+                        <p id="leadership"></p>
+                    <h3>Law Enforcement</h3>
+                        <p id="lawEnforcement"></p>
+                    <h3>Population Wealth</h3>
+                        <p id="populationWealth"></p>
+                    <h3>Crime</h3>
+                        <p id="crime"></p>
+                
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-5">Points of Interest</h2>
+                    <h3>Non-Commercial Locations</h3>
+                        <p id="nonCommercialLocations" ></p>
+                    <h3>Commercial Locations</h3>
+                        <p id="commercialLocations" ></p>
+                    <h3>Shops</h3>
+                        <p id="shops" ></p>
+                    <h3>Services</h3>
+                        <p id="services" ></p>
+
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-5">Extra Intrigue</h2>
+                    <h3>Recent History</h3>
+                        <p id="recentHistory" ></p>
+                    <h3>Noteworthy Official</h3>
+                        <p id="noteworthyOfficial"></p>
+                    <h3>Market Day</h3>
+                        <p id="marketDay"></p>
+        </div>
+    </div>
+    </main>
+    <section id="generation-info" class="generation-info container card shadow-sm border-0 my-4 p-4 p-md-5" aria-label="Generation information" data-i18n-aria></section>
+    <div id="site-footer"></div>
+
+<script src="js/i18n.js" defer></script>
+<script src="js/lang/pt-book.js" defer></script>
+<script src="js/generation-info.js" defer></script>
+<script src="js/towns.js" defer></script>
+<script src="js/extras-data.js" defer></script>
+<script src="js/extras.js" defer></script>
+<script src="js/generation-export.js" defer></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+<script src="js/layout.js" defer></script>
+</body>
+</html>

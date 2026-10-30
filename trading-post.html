@@ -6,15 +6,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spetacular Settlements</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <title>Spectacular Settlements Generator - Trading Post Generator</title>
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/stylesheet.css">
 </head>
 
-<body>
-    <div class="container-fluid">
+<body class="trading-page generation-page">
+    <div id="site-header"></div>
+    <nav class="generation-actions container d-flex justify-content-center align-items-center flex-wrap gap-2 my-4" aria-label="Ações da geração">
+        <button class="btn btn-primary generation-button reset-btn" data-i18n type="button" onclick="window.location.reload()">🎲 Roll again</button>
+        <button class="btn btn-success generation-button" data-i18n type="button" onclick="exportGeneration()">⬇ Export TXT</button>
+        <a href="index.html" class="btn btn-outline-secondary generation-button menu-button" data-i18n>← Main menu</a>
+    </nav>
+    <main class="generation-content container card shadow-sm border-0 my-4 p-4 p-md-5">
         <div class="row">
             <div class="col">
-                <h2>Basic Information</h2>
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-0">Basic Information</h2>
                     <h3>Origin</h3>
                         <p id="origin"></p>
                     <h3>Speciality</h3>
@@ -30,9 +37,7 @@
                     <h3>Environment</h3>
                         <p id="environment"></p>
 
-                <br><br>
-
-                <h2>Community</h2>
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-5">Community</h2>
                     <h3>Resident Population</h3>
                         <p id="residentPopulation"></p>
                     <h3>Demographics</h3>
@@ -48,9 +53,7 @@
                     <h3>Crime</h3>
                         <p id="crime"></p>
 
-                <br><br>
-                
-                <h2>Points of Interest</h2>
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-5">Points of Interest</h2>
                     <h3>Shops</h3>
                         <p id="shops"></p>
                     <h3>Services</h3>
@@ -58,9 +61,7 @@
                     <h3>Places of Worship</h3>
                         <p id="placesWorship"></p>
 
-                <br><br>
-                
-                <h2>Extra Intrigue</h2>
+                <h2 class="h4 fw-semibold text-center border-bottom pb-2 mb-4 mt-5">Extra Intrigue</h2>
                     <h3>Recent History</h3>
                         <p id="recentHistory"></p>
                     <h3>Politics</h3>
@@ -76,12 +77,20 @@
                     <h3>Danger Type</h3>
                         <p id="dangerType"></p>
 
-            </div>
         </div>
     </div>
-</body>
+    </main>
+    <section id="generation-info" class="generation-info container card shadow-sm border-0 my-4 p-4 p-md-5" aria-label="Generation information" data-i18n-aria></section>
+    <div id="site-footer"></div>
 
+<script src="js/i18n.js" defer></script>
+<script src="js/lang/pt-book.js" defer></script>
+<script src="js/generation-info.js" defer></script>
 <script src="js/trading-post.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous" defer></script>
-
+<script src="js/extras-data.js" defer></script>
+<script src="js/extras.js" defer></script>
+<script src="js/generation-export.js" defer></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+<script src="js/layout.js" defer></script>
+</body>
 </html>
