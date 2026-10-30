@@ -192,6 +192,34 @@
     color: #1e3c72;
 }
 
+.site-navigation a.gcity-home-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.8rem;
+    border-radius: 999px;
+    background: #198754;
+    color: #fff;
+    font-weight: 700;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.site-navigation a.gcity-home-button:hover,
+.site-navigation a.gcity-home-button:focus-visible {
+    transform: translateY(-1px);
+    background: #146c43;
+    color: #fff;
+}
+
+.site-navigation a.gcity-home-button:focus-visible {
+    outline: 3px solid #1e3c72;
+    outline-offset: 3px;
+}
+
+.site-navigation a.gcity-home-button[hidden] {
+    display: none;
+}
+
 .site-footer {
     margin: 1rem auto;
     color: #667085;

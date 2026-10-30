@@ -299,7 +299,15 @@ function attachGenerationRerollButton(fieldId, record) {
 
     const output = document.getElementById(fieldId);
     const heading = output?.previousElementSibling;
-    if (heading?.tagName !== "H3" || heading.querySelector(".field-reroll")) {
+    if (heading?.tagName !== "H3") {
+        return;
+    }
+
+    const existingButtons = heading.querySelectorAll(".field-reroll");
+    if (existingButtons.length) {
+        existingButtons.forEach((existingButton, index) => {
+            if (index > 0) existingButton.remove();
+        });
         return;
     }
 

@@ -41,13 +41,14 @@ Roll full settlements for your tabletop adventures: trading posts, villages, tow
 
 ## 🚀 Running locally
 
-The shared header and footer are loaded with `fetch`, so the site must be served over HTTP instead of opening the HTML files directly:
+The HTML pages can be opened directly from disk or served locally:
 
 ```bash
 python -m http.server
 ```
 
-Then open <http://localhost:8000>.
+Then open <http://localhost:8000>, or open `index.html` directly.
+When opening files directly, internal generator links carry the selected language in the URL because browsers may isolate `file://` storage by file.
 
 ## 🗂️ Project structure
 
@@ -62,8 +63,8 @@ Then open <http://localhost:8000>.
 │   ├── keep.html / castle.html / stronghold.html
 │   └── extras.html            # Standalone extras (encounters, rumors, taverns...)
 ├── components/
-│   ├── header/header.html     # Shared header
-│   └── footer/footer.html     # Shared footer (language flags, credits)
+│   ├── header/header.js       # Shared header and its scripts
+│   └── footer/footer.js       # Shared footer and its scripts
 ├── css/
 │   └── stylesheet.css         # All of the project's styles
 ├── js/
@@ -79,7 +80,7 @@ Then open <http://localhost:8000>.
 
 ## 🧩 How it works
 
-- **Shared layout.** Each page reserves `#site-header` and `#site-footer`; `js/layout.js` loads the fragments and their shared scripts from `components/`, then loads page scripts in the order listed by `data-page-scripts`.
+- **Shared layout.** Each page reserves `#site-header` and `#site-footer`; the JavaScript components render them without `fetch`, so they also work when opening an HTML file directly. `js/layout.js` loads the component scripts and then page scripts in the order listed by `data-page-scripts`.
 - **Information card.** `js/generation-info.js` must load before the generator script. Generators call its `rollDie` and `logMod` helpers so every roll and modifier can be listed.
 - **Translations.** Display text in the generator scripts is wrapped as `__("English text")`, and `js/lang/pt-book.js` maps each English string to Portuguese. Generation uses a seeded random number generator, so reloading with the same seed in another language gives the same roll. Rolls must never depend on translated text.
 

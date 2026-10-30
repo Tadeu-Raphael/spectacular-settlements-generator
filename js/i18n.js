@@ -89,6 +89,7 @@
         "✦ Extras": "✦ Extras",
         "Encounters, rumors, taverns, hooks and other extra details only": "Apenas encontros, rumores, tavernas, ganchos e outros detalhes extras",
         "← Back": "← Voltar",
+        "← Back to G-City": "← Voltar ao G-City",
 
         // Generation pages
         "Generation actions": "Ações da geração",
@@ -210,6 +211,10 @@
     const DICTIONARIES = { en: {}, pt: PT };
 
     function detect() {
+        if (location.protocol === "file:") {
+            const queryLanguage = new URLSearchParams(location.search).get("lang");
+            if (SUPPORTED.includes(queryLanguage)) return queryLanguage;
+        }
         let stored = null;
         try { stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY); } catch (error) { /* storage unavailable */ }
         if (SUPPORTED.includes(stored)) return stored;
@@ -282,8 +287,15 @@
 
     function translateHeadings(root) {
         root.querySelectorAll(".generation-content h2, .generation-content h3").forEach(node => {
+            const rerollButton = node.querySelector(".field-reroll");
+            node.querySelectorAll(".field-reroll").forEach((button, index) => {
+                if (index > 0) button.remove();
+            });
+            if (rerollButton) rerollButton.remove();
+
             node.dataset.i18nKey = node.dataset.i18nKey || node.textContent.trim();
             node.textContent = t(node.dataset.i18nKey);
+            if (rerollButton) node.appendChild(rerollButton);
         });
     }
 
@@ -325,7 +337,20 @@
                     extras: window.I18N.extrasState ? window.I18N.extrasState() : null
                 }));
             } catch (error) { /* storage unavailable */ }
-            location.reload();
+            if (location.protocol === "file:") {
+                const url = new URL(location.href);
+                url.searchParams.set("lang", lang);
+                location.href = url.href;
+            } else {
+                location.reload();
+            }
+            return;
+        }
+
+        if (location.protocol === "file:") {
+            const url = new URL(location.href);
+            url.searchParams.set("lang", lang);
+            location.href = url.href;
             return;
         }
 
