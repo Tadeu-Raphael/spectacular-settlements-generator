@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/stylesheet.css">
 </head>
 
-<body class="index-page">
+<body class="index-page" data-page-scripts="js/index.js">
     <div id="site-header"></div>
     <main class="index-main container py-5">
         <section class="main-menu card border-0 shadow-lg">
@@ -21,7 +21,7 @@
 
             <div class="row g-3" id="menu-main">
                 <div class="col-12">
-                    <a class="city-card capitals-card card h-100 text-decoration-none" href="capitals.html">
+                    <a class="city-card capitals-card card h-100 text-decoration-none" href="pages/capitals.html">
                         <div class="card-body py-4">
                             <h2 data-i18n class="city-title capitals-title card-title fw-semibold">👑 Capitals</h2>
                             <p data-i18n class="city-description card-text text-secondary">The largest settlements, with government, nobility, espionage, armies and many districts</p>
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="col-12">
-                    <a class="city-card cities-card card h-100 text-decoration-none" href="cities.html">
+                    <a class="city-card cities-card card h-100 text-decoration-none" href="pages/cities.html">
                         <div class="card-body py-4">
                             <h2 data-i18n class="city-title cities-title card-title fw-semibold">🏰 Cities</h2>
                             <p data-i18n class="city-description card-text text-secondary">Large metropolises split into districts, with politics, crime and intrigue</p>
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="col-12">
-                    <a class="city-card town-card card h-100 text-decoration-none" href="towns.html">
+                    <a class="city-card town-card card h-100 text-decoration-none" href="pages/towns.html">
                         <div class="card-body py-4">
                             <h2 data-i18n class="city-title town-title card-title fw-semibold">🏙️ Towns</h2>
                             <p data-i18n class="city-description card-text text-secondary">Established towns with markets, defenses and full infrastructure</p>
@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="col-12">
-                    <a class="city-card village-card card h-100 text-decoration-none" href="villages.html">
+                    <a class="city-card village-card card h-100 text-decoration-none" href="pages/villages.html">
                         <div class="card-body py-4">
                             <h2 data-i18n class="city-title village-title card-title fw-semibold">🌲 Villages</h2>
                             <p data-i18n class="city-description card-text text-secondary">Smaller, simpler communities focused on basic resources</p>
@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="col-12">
-                    <a class="city-card trading-card card h-100 text-decoration-none" href="trading-post.html">
+                    <a class="city-card trading-card card h-100 text-decoration-none" href="pages/trading-post.html">
                         <div class="card-body py-4">
                             <h2 data-i18n class="city-title trading-title card-title fw-semibold">🛒 Trading Posts</h2>
                             <p data-i18n class="city-description card-text text-secondary">Strategic commercial hubs, markets and trade routes</p>
@@ -75,7 +75,7 @@
                 </div>
 
                 <div class="col-12">
-                    <a class="city-card extras-menu-card card h-100 text-decoration-none" href="extras.html">
+                    <a class="city-card extras-menu-card card h-100 text-decoration-none" href="pages/extras.html">
                         <div class="card-body py-4">
                             <h2 data-i18n class="city-title extras-title card-title fw-semibold">✦ Extras</h2>
                             <p data-i18n class="city-description card-text text-secondary">Encounters, rumors, taverns, hooks and other extra details only</p>
@@ -87,7 +87,7 @@
             <div id="menu-fortresses" class="d-none">
                 <div class="row g-3">
                     <div class="col-12">
-                        <a class="city-card fortresses-card card h-100 text-decoration-none" href="keep.html">
+                        <a class="city-card fortresses-card card h-100 text-decoration-none" href="pages/keep.html">
                             <div class="card-body py-4">
                                 <h2 data-i18n class="city-title fortresses-title card-title fw-semibold">🏯 Keep</h2>
                                 <p data-i18n class="city-description card-text text-secondary">Just the main tower of the fortress</p>
@@ -95,7 +95,7 @@
                         </a>
                     </div>
                     <div class="col-12">
-                        <a class="city-card fortresses-card card h-100 text-decoration-none" href="castle.html">
+                        <a class="city-card fortresses-card card h-100 text-decoration-none" href="pages/castle.html">
                             <div class="card-body py-4">
                                 <h2 data-i18n class="city-title fortresses-title card-title fw-semibold">🏰 Castle</h2>
                                 <p data-i18n class="city-description card-text text-secondary">A keep plus walls, towers, moat and the rest of the castle</p>
@@ -103,7 +103,7 @@
                         </a>
                     </div>
                     <div class="col-12">
-                        <a class="city-card fortresses-card card h-100 text-decoration-none" href="stronghold.html">
+                        <a class="city-card fortresses-card card h-100 text-decoration-none" href="pages/stronghold.html">
                             <div class="card-body py-4">
                                 <h2 data-i18n class="city-title fortresses-title card-title fw-semibold">🛡️ Stronghold</h2>
                                 <p data-i18n class="city-description card-text text-secondary">A reinforced keep and castle, with brutal defenses and stylistic additions</p>
@@ -120,9 +120,6 @@
     </main>
     <div id="site-footer"></div>
 
-    <script src="js/i18n.js" defer></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
     <script src="js/layout.js" defer></script>
-    <script src="js/index.js" defer></script>
 </body>
 </html>

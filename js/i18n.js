@@ -346,5 +346,9 @@
         const button = event.target.closest("[data-lang-switch]");
         if (button) set(button.dataset.langSwitch);
     });
-    document.addEventListener("DOMContentLoaded", () => apply(document));
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => apply(document), { once: true });
+    } else {
+        apply(document);
+    }
 })();

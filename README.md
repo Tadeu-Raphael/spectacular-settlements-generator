@@ -53,13 +53,14 @@ Then open <http://localhost:8000>.
 
 ```
 ├── index.html                 # Main menu
-├── trading-post.html          # Generator pages
-├── villages.html
-├── towns.html
-├── cities.html
-├── capitals.html
-├── keep.html / castle.html / stronghold.html
-├── extras.html                # Standalone extras (encounters, rumors, taverns...)
+├── pages/                     # Generator pages
+│   ├── trading-post.html
+│   ├── villages.html
+│   ├── towns.html
+│   ├── cities.html
+│   ├── capitals.html
+│   ├── keep.html / castle.html / stronghold.html
+│   └── extras.html            # Standalone extras (encounters, rumors, taverns...)
 ├── components/
 │   ├── header/header.html     # Shared header
 │   └── footer/footer.html     # Shared footer (language flags, credits)
@@ -78,7 +79,7 @@ Then open <http://localhost:8000>.
 
 ## 🧩 How it works
 
-- **Shared layout.** Each page reserves `#site-header` and `#site-footer`; `js/layout.js` fills them from `components/`.
+- **Shared layout.** Each page reserves `#site-header` and `#site-footer`; `js/layout.js` loads the fragments and their shared scripts from `components/`, then loads page scripts in the order listed by `data-page-scripts`.
 - **Information card.** `js/generation-info.js` must load before the generator script. Generators call its `rollDie` and `logMod` helpers so every roll and modifier can be listed.
 - **Translations.** Display text in the generator scripts is wrapped as `__("English text")`, and `js/lang/pt-book.js` maps each English string to Portuguese. Generation uses a seeded random number generator, so reloading with the same seed in another language gives the same roll. Rolls must never depend on translated text.
 

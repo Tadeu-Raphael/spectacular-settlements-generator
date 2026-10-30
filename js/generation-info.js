@@ -4,7 +4,7 @@ const rerollRecords = new Map();
 const UNTRACKED_STATE = Symbol("untracked state");
 const MISSING_STATE = Symbol("missing state");
 let activeRerollRecord = null;
-let generationRerollButtonsReady = document.readyState === "complete";
+let generationRerollButtonsReady = document.readyState !== "loading";
 
 const MODIFIER_LABELS = {
     sizeMod: "Size",

@@ -561,10 +561,16 @@
         return lines;
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
+    const initializeExtras = () => {
         annotateTerms();
         renderTypeSelector();
         renderExtrasCard();
         replayActions();
-    });
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initializeExtras, { once: true });
+    } else {
+        initializeExtras();
+    }
 })();
