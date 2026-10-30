@@ -15,6 +15,9 @@ const state = {
     guilds: {}
 };
 
+window.generatorModifiers = mods;
+window.generatorState = state;
+
 const SIZE_NAMES = [__("Very Small"), __("Small"), __("Medium"), __("Large"), __("Very Large")];
 const OUTSIDE_ROLLS = [5, 4, 3, 2, 1];
 const ADDITIONAL_ROLLS = [1, 2, 3, 4, 5];
@@ -447,6 +450,10 @@ const AWARENESS = [
     __("Disparate, Direct Occurrences"), __("Many Direct Occurrences"), __("Willfully Ignorant"), __("Actively Aware")
 ];
 
+installGenerationRerolls({
+    numberOfDistricts: { manual: true }
+});
+
 // Basic Information
 originValue();
 priorityValue();
@@ -718,7 +725,22 @@ function rollDistrictTypes() {
 }
 
 function districtsValue() {
-    const types = rollDistrictTypes();
+    return runGenerationField("numberOfDistricts", rollDistrictTypes, {
+        beforeReroll: clearDistrictFields,
+        afterCommit: renderDistrictFields
+    });
+}
+
+function clearDistrictFields() {
+    document.querySelectorAll(".generated-district").forEach(element => {
+        if (element.id) {
+            discardGenerationReroll(element.id);
+        }
+        element.remove();
+    });
+}
+
+function renderDistrictFields(types) {
     let anchor = document.getElementById("numberOfDistricts");
 
     types.forEach((type, index) => {
@@ -727,10 +749,12 @@ function districtsValue() {
         const paragraph = document.createElement("p");
 
         heading.textContent = `${__("District ")}${index + 1}: ${type}`;
+        heading.className = "generated-district";
         paragraph.id = id;
+        paragraph.className = "generated-district";
         anchor.after(heading, paragraph);
         anchor = paragraph;
-        show(id, buildDistrict(id, type));
+        runGenerationField(id, () => show(id, buildDistrict(id, type)));
     });
 }
 

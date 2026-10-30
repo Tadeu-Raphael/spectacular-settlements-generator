@@ -24,6 +24,7 @@
     const actionRegistry = {};
     let actionCounter = 0;
     let pendingSeed = null;
+    let termAnnotationHandlersBound = false;
     window.I18N.extrasState = () => ({ actions: actionLog, settlement: pageType });
 
     function perform(id, mod, run) {
@@ -255,18 +256,23 @@
             });
         });
 
-        content.addEventListener("click", event => {
-            const term = event.target.closest(".extra-term");
-            if (term) locationModal(term.dataset.term);
-        });
-        content.addEventListener("keydown", event => {
-            const term = event.target.closest?.(".extra-term");
-            if (term && (event.key === __("Enter") || event.key === " ")) {
-                event.preventDefault();
-                locationModal(term.dataset.term);
-            }
-        });
+        if (!termAnnotationHandlersBound) {
+            content.addEventListener("click", event => {
+                const term = event.target.closest(".extra-term");
+                if (term) locationModal(term.dataset.term);
+            });
+            content.addEventListener("keydown", event => {
+                const term = event.target.closest?.(".extra-term");
+                if (term && (event.key === __("Enter") || event.key === " ")) {
+                    event.preventDefault();
+                    locationModal(term.dataset.term);
+                }
+            });
+            termAnnotationHandlersBound = true;
+        }
     }
+
+    window.annotateGenerationTerms = annotateTerms;
 
     /* ---------- Geradores ---------- */
 

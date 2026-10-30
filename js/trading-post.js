@@ -6,6 +6,7 @@ var qualityMod = 0;
 var tradingPostSize = 0;
 var urbanEncounterMod = 0;
 
+installGenerationRerolls();
 
 //Basic Information
 originValue();

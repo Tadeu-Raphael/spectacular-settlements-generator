@@ -53,4 +53,5 @@ function emphasizeVillageRollLabels() {
     }
 }
 
+window.emphasizeVillageRollLabels = emphasizeVillageRollLabels;
 emphasizeVillageRollLabels();

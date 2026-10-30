@@ -9,6 +9,27 @@ var crimeMod = 0;
 var otherLocationsTypeAux = 0;
 var flagVillageDangerLevel = 0;
 
+installGenerationRerolls({
+    defaultPoints: {
+        handler: "resourceValue",
+        key: "resourceValue",
+        primaryField: "resource",
+        outputIds: ["resource", "defaultPoints"]
+    },
+    size: {
+        afterRun: result => { sizeFinal = result; }
+    },
+    worship: {
+        getArgs: () => [sizeFinal]
+    },
+    placeGathering: {
+        getArgs: () => [sizeFinal]
+    },
+    otherLocations: {
+        getArgs: () => [sizeFinal]
+    }
+});
+
 //Basic Information
 ageValue();
 hardshipLikelihoodValue();

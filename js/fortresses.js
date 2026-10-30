@@ -13,8 +13,16 @@ const state = {
     garrisonBunks: false,
     ruined: false,
     keep: {},
-    castle: {}
+    castle: {},
+    extraTowers: [],
+    styleTowers: [],
+    strongholdThickness: 0,
+    strongholdHeight: 0,
+    styleAmplification: {}
 };
+
+window.generatorModifiers = mods;
+window.generatorState = state;
 
 function modValue(name) {
     return mods[name] || 0;
@@ -63,12 +71,16 @@ function pick(sides, table, modName = "") {
     return { entry, roll };
 }
 
-function rollTable(id, sides, table, modName = "") {
-    setGenContext(id);
-    const result = pick(sides, table, modName);
-    show(id, format(result.entry));
-
-    return result;
+function rollTable(id, sides, table, modName = "", afterRoll) {
+    return runGenerationField(id, () => {
+        setGenContext(id);
+        const result = pick(sides, table, modName);
+        show(id, format(result.entry));
+        if (afterRoll) {
+            afterRoll(result);
+        }
+        return result;
+    });
 }
 
 function pickRandom(list) {
@@ -878,104 +890,136 @@ function rollIssue() {
 function generalValues() {
     rollTable("age", 20, AGE);
     rollTable("location", 20, LOCATION);
-    state.environment = rollTable("environment", 10, ENVIRONMENT).entry[0] - 1;
+    rollTable("environment", 10, ENVIRONMENT, "", result => {
+        state.environment = result.entry[0] - 1;
+    });
 
-    const condition = rollTable("condition", 20, CONDITION, "conditionMod");
-    state.ruined = condition.entry[1] === __("Ruin or Bare Bones");
+    rollTable("condition", 20, CONDITION, "conditionMod", result => {
+        state.ruined = result.entry[1] === __("Ruin or Bare Bones");
+    });
 
-    state.expense = EXPENSE.indexOf(rollTable("expense", 20, EXPENSE).entry);
+    rollTable("expense", 20, EXPENSE, "", result => {
+        state.expense = EXPENSE.indexOf(result.entry);
+    });
 
-    setGenContext("material");
-    const material = pick(20, MATERIAL).entry;
-    let text = describe(material);
-    if (material[1] === __("Unique Materials")) {
-        text += `<br><b>${__("Unique material:")}</b> ${describe(pick(6, UNIQUE_MATERIAL).entry)}`;
-    }
-    state.woodWalls = material[1] === __("Timber");
-    show("material", text);
+    runGenerationField("material", () => {
+        setGenContext("material");
+        const material = pick(20, MATERIAL).entry;
+        let text = describe(material);
+        if (material[1] === __("Unique Materials")) {
+            text += `<br><b>${__("Unique material:")}</b> ${describe(pick(6, UNIQUE_MATERIAL).entry)}`;
+        }
+        state.woodWalls = material[1] === __("Timber");
+        show("material", text);
+    });
 
     rollTable("reason", 10, REASON);
     rollTable("design", 8, DESIGN);
     rollTable("resourceOrigin", 20, RESOURCE_ORIGIN);
 
-    setGenContext("localImpact");
-    show("localImpact", `${describe(pick(6, LOCAL_IMPACT).entry)}<br><b>${__("Change over time (optional):")}</b> ${describe(pick(6, IMPACT_CHANGE).entry)}`);
+    runGenerationField("localImpact", () => {
+        setGenContext("localImpact");
+        show("localImpact", `${describe(pick(6, LOCAL_IMPACT).entry)}<br><b>${__("Change over time (optional):")}</b> ${describe(pick(6, IMPACT_CHANGE).entry)}`);
+    });
 
     rollTable("alternateEntries", 20, ALTERNATE_ENTRY);
     rollTable("residentRelations", 12, RESIDENT_RELATIONS);
     rollTable("residents", 20, RESIDENTS, "residentsMod");
     rollTable("residentAttitude", 6, RESIDENT_ATTITUDE);
 
-    const garrison = rollTable("garrisonSize", 20, GARRISON_SIZE);
-    state.garrisonBunks = Boolean(garrison.entry[4]);
+    rollTable("garrisonSize", 20, GARRISON_SIZE, "", result => {
+        state.garrisonBunks = Boolean(result.entry[4]);
+    });
     rollTable("garrisonEquipment", 20, GARRISON_EQUIPMENT);
 
-    setGenContext("residentHobbies");
-    show("residentHobbies", `<b>${HOBBIES[rollDie(20) - 1]}.</b>${__(" Roll again for each major individual or group if desired.")}`);
+    runGenerationField("residentHobbies", () => {
+        setGenContext("residentHobbies");
+        show("residentHobbies", `<b>${HOBBIES[rollDie(20) - 1]}.</b>${__(" Roll again for each major individual or group if desired.")}`);
+    });
 
-    setGenContext("currentIssue");
-    const issues = [];
-    if (state.ruined) {
-        issues.push(`<b>${__("Structural Damage [")}${rollDie(6) <= 3 ? __("Weather") : __("Neglect")}].</b>${__(" The ruined condition guarantees damage. Severity: ")}${describe(pick(6, ISSUE_SEVERITY).entry)}`);
-    }
-    issues.push(rollIssue());
-    show("currentIssue", issues.join("<br>"));
+    runGenerationField("currentIssue", () => {
+        setGenContext("currentIssue");
+        const issues = [];
+        if (state.ruined) {
+            issues.push(`<b>${__("Structural Damage [")}${rollDie(6) <= 3 ? __("Weather") : __("Neglect")}].</b>${__(" The ruined condition guarantees damage. Severity: ")}${describe(pick(6, ISSUE_SEVERITY).entry)}`);
+        }
+        issues.push(rollIssue());
+        show("currentIssue", issues.join("<br>"));
+    });
 
     rollTable("secrets", 12, SECRETS);
     rollTable("history", 10, HISTORY);
     rollTable("oddities", 12, ODDITIES);
 
-    setGenContext("specialFeature");
-    const feature = pick(8, SPECIAL_FEATURE);
-    const [sides, table] = FEATURE_SPECIFICS[feature.entry[0] - 1];
-    show("specialFeature", `${describe(feature.entry)}<br><b>${__("Specifics:")}</b> ${describe(pick(sides, table).entry)}`);
+    runGenerationField("specialFeature", () => {
+        setGenContext("specialFeature");
+        const feature = pick(8, SPECIAL_FEATURE);
+        const [sides, table] = FEATURE_SPECIFICS[feature.entry[0] - 1];
+        show("specialFeature", `${describe(feature.entry)}<br><b>${__("Specifics:")}</b> ${describe(pick(sides, table).entry)}`);
+    });
 }
 
 function keepValues() {
     const keep = state.keep;
 
-    const wall = rollTable("wallThickness", 10, WALL_THICKNESS);
-    keep.wall = WALL_FEET[WALL_THICKNESS.indexOf(wall.entry)];
-    document.getElementById("wallThickness").innerHTML += wallReferenceFigure(keep.wall);
+    rollTable("wallThickness", 10, WALL_THICKNESS, "", result => {
+        keep.wall = WALL_FEET[WALL_THICKNESS.indexOf(result.entry)];
+        document.getElementById("wallThickness").innerHTML += wallReferenceFigure(keep.wall);
+    });
 
-    keep.round = rollTable("shape", 6, SHAPE).entry[1] === __("Round");
+    rollTable("shape", 6, SHAPE, "", result => {
+        keep.round = result.entry[1] === __("Round");
+    });
 
-    const size = rollTable("size", 20, KEEP_SIZE).entry;
-    const bsm = KEEP_SIZE.indexOf(size) + 1;
-    keep.area = keep.round ? size[5] : size[4];
-    show("size", `${describe(size)}${__(" Floor space: ")}${keep.round ? `${size[5]}${__(" squares across")}` : `${size[4]}x${size[4]}${__(" squares")}`}${__(" (1 square = 5 ft.).")}${figure(keepSvg(keep.round, keep.area, keep.wall), __("Reference: keep floor plan to scale, walls in black (1 square = 5 ft.)."))}${mapSizeFigure()}`);
+    rollTable("size", 20, KEEP_SIZE, "", result => {
+        const size = result.entry;
+        const bsm = KEEP_SIZE.indexOf(size) + 1;
+        keep.bsm = bsm;
+        keep.area = keep.round ? size[5] : size[4];
+        show("size", `${describe(size)}${__(" Floor space: ")}${keep.round ? `${size[5]}${__(" squares across")}` : `${size[4]}x${size[4]}${__(" squares")}`}${__(" (1 square = 5 ft.).")}${figure(keepSvg(keep.round, keep.area, keep.wall), __("Reference: keep floor plan to scale, walls in black (1 square = 5 ft.)."))}${mapSizeFigure()}`);
+    });
 
-    const floors = rollTable("floors", 20, FLOORS).entry;
-    const totalFloors = FLOORS.indexOf(floors) + 1;
-    keep.above = Math.max(1, totalFloors - 1);
-    keep.cellar = totalFloors > 1;
+    rollTable("floors", 20, FLOORS, "", result => {
+        const totalFloors = FLOORS.indexOf(result.entry) + 1;
+        keep.above = Math.max(1, totalFloors - 1);
+        keep.cellar = totalFloors > 1;
+    });
 
-    if (keep.above < 2) {
-        show("raisedEntrance", __("<b>Skipped.</b> Only one above-ground floor."));
-    } else {
-        rollTable("raisedEntrance", 20, RAISED_ENTRANCE);
-    }
+    runGenerationField("raisedEntrance", () => {
+        if (keep.above < 2) {
+            show("raisedEntrance", __("<b>Skipped.</b> Only one above-ground floor."));
+        } else {
+            setGenContext("raisedEntrance");
+            show("raisedEntrance", format(pick(20, RAISED_ENTRANCE).entry));
+        }
+    });
 
-    keep.entry = rollTable("entryDefenses", 20, ENTRY_DEFENSES).entry[1];
+    rollTable("entryDefenses", 20, ENTRY_DEFENSES, "", result => {
+        keep.entry = result.entry[1];
+    });
     rollTable("furnishings", 20, FURNISHINGS, "furnishingsMod");
 
-    setGenContext("rooms");
-    const starting = [__("Bedroom"), __("Kitchen"), __("Dining and Receiving")];
-    if (state.garrisonBunks) {
-        starting.push(__("Guard Bunks"));
-    }
+    runGenerationField("rooms", () => {
+        setGenContext("rooms");
+        const starting = [__("Bedroom"), __("Kitchen"), __("Dining and Receiving")];
+        if (state.garrisonBunks) {
+            starting.push(__("Guard Bunks"));
+        }
 
-    const count = Math.max(1, bsm * totalFloors + modValue("roomsMod"));
-    const rooms = [...starting];
-    for (let i = starting.length; i < count; i++) {
-        rooms.push(lookup(ROOMS, rollDie(20))[1]);
-    }
+        const bsm = keep.bsm;
+        const totalFloors = keep.above + (keep.cellar ? 1 : 0);
+        const count = Math.max(1, bsm * totalFloors + modValue("roomsMod"));
+        const rooms = [...starting];
+        for (let i = starting.length; i < count; i++) {
+            rooms.push(lookup(ROOMS, rollDie(20))[1]);
+        }
 
-    const tally = {};
-    rooms.forEach(room => { tally[room] = (tally[room] || 0) + 1; });
-    const list = Object.entries(tally).map(([room, amount]) => (amount > 1 ? `${room}${__(" x")}${amount}` : room));
+        const tally = {};
+        rooms.forEach(room => { tally[room] = (tally[room] || 0) + 1; });
+        const list = Object.entries(tally).map(([room, amount]) => (amount > 1 ? `${room}${__(" x")}${amount}` : room));
 
-    show("rooms", `<b>${plural(count, __("room"))}</b>${__(" (base size modifier ")}${bsm}${__(" x ")}${totalFloors}${__(" floors")}${modValue("roomsMod") ? `, ${formatSigned(modValue("roomsMod"))}${__(" condition")}` : ""}${__("). Starting rooms")}${state.garrisonBunks ? __(" (with Guard Bunks from the garrison)") : ""}${__(" count toward the total.")}<br>${list.join(", ")}.<br>${__("A privy is a free room in every keep.")}`);
+        show("rooms", `<b>${plural(count, __("room"))}</b>${__(" (base size modifier ")}${bsm}${__(" x ")}${totalFloors}${__(" floors")}${modValue("roomsMod") ? `, ${formatSigned(modValue("roomsMod"))}${__(" condition")}` : ""}${__("). Starting rooms")}${state.garrisonBunks ? __(" (with Guard Bunks from the garrison)") : ""}${__(" count toward the total.")}<br>${list.join(", ")}.<br>${__("A privy is a free room in every keep.")}`);
+    });
 }
 
 function towerLine(tower, index, round) {
@@ -989,75 +1033,96 @@ function rollTower() {
 
 function castleValues() {
     const castle = state.castle;
-    const wood = state.woodWalls ? 1 : 0;
+    runGenerationField("geographicAdvantage", () => {
+        const advantages = ENVIRONMENT_ADVANTAGES[state.environment];
+        setGenContext("geographicAdvantage");
+        const advantage = advantages[rollDie(4) - 1];
+        show("geographicAdvantage", `<b>${advantage}.</b> ${ADVANTAGES[advantage]}`);
+    });
 
-    const advantages = ENVIRONMENT_ADVANTAGES[state.environment];
-    setGenContext("geographicAdvantage");
-    const advantage = advantages[rollDie(4) - 1];
-    show("geographicAdvantage", `<b>${advantage}.</b> ${ADVANTAGES[advantage]}`);
+    rollTable("style", 20, STYLE, "", result => {
+        const style = result.entry[1];
+        castle.concentric = style === __("Concentric");
+        document.getElementById("style").innerHTML += figure(styleSvg(style), `${__("Reference: ")}${style}${__(" layout (K = keep).")}`);
+    });
 
-    const style = rollTable("style", 20, STYLE).entry[1];
-    castle.concentric = style === __("Concentric");
-    document.getElementById("style").innerHTML += figure(styleSvg(style), `${__("Reference: ")}${style}${__(" layout (K = keep).")}`);
+    rollTable("castleSize", 20, CASTLE_SIZE, "", result => {
+        castle.bsm = CASTLE_SIZE.indexOf(result.entry) + 1;
+    });
 
-    const size = rollTable("castleSize", 20, CASTLE_SIZE).entry;
-    castle.bsm = CASTLE_SIZE.indexOf(size) + 1;
+    runGenerationField("towers", () => {
+        setGenContext("towers");
+        const count = castle.bsm + rollDie(4);
+        castle.towers = Array.from({ length: count }, rollTower);
+        show("towers", `<b>${plural(count, __("tower"))}</b>${__(" (base size modifier ")}${castle.bsm}${__(" + 1d4). Tower height is the wall height plus the listed bonus.")}<br>${castle.towers.map((tower, i) => towerLine(tower, i, tower.round)).join("<br>")}`);
+    });
 
-    setGenContext("towers");
-    const count = castle.bsm + rollDie(4);
-    castle.towers = Array.from({ length: count }, rollTower);
+    rollTable("wallThickness2", 20, CURTAIN_THICKNESS, "", result => {
+        castle.thickness = result.entry[4][state.woodWalls ? 1 : 0];
+        show("wallThickness2", `<b>${feet(castle.thickness)}</b> (${state.woodWalls ? __("wood walls") : __("stone walls")}${__("; table: ")}${result.entry[1]}).${castle.concentric ? __(" Concentric: the inner wall should be at least as high as the outer wall.") : ""}`);
+    });
 
-    const thickness = rollTable("wallThickness2", 20, CURTAIN_THICKNESS).entry;
-    const height = rollTable("wallHeight", 20, CURTAIN_HEIGHT).entry;
-    castle.thickness = thickness[4][wood];
-    castle.height = height[4][wood];
-    show("wallThickness2", `<b>${feet(castle.thickness)}</b> (${state.woodWalls ? __("wood walls") : __("stone walls")}${__("; table: ")}${thickness[1]}).${castle.concentric ? __(" Concentric: the inner wall should be at least as high as the outer wall.") : ""}`);
-    show("wallHeight", `<b>${feet(castle.height)}</b> (${state.woodWalls ? __("wood walls") : __("stone walls")}${__("; table: ")}${height[1]}).`);
+    rollTable("wallHeight", 20, CURTAIN_HEIGHT, "", result => {
+        castle.height = result.entry[4][state.woodWalls ? 1 : 0];
+        show("wallHeight", `<b>${feet(castle.height)}</b> (${state.woodWalls ? __("wood walls") : __("stone walls")}${__("; table: ")}${result.entry[1]}).`);
+    });
 
-    show("towers", `<b>${plural(count, __("tower"))}</b>${__(" (base size modifier ")}${castle.bsm}${__(" + 1d4). Tower height is the wall height plus the listed bonus.")}<br>${castle.towers.map((tower, i) => towerLine(tower, i, tower.round)).join("<br>")}`);
+    rollTable("barbican", 20, BARBICAN, "", result => {
+        castle.barbican = result.entry[1];
+    });
 
-    castle.barbican = rollTable("barbican", 20, BARBICAN).entry[1];
+    runGenerationField("wallDefenses", () => {
+        setGenContext("wallDefenses");
+        castle.defenses = [];
+        castle.magic = [];
+        rollDefenses(state.expense);
+        show("wallDefenses", defensesText(state.expense));
+    });
 
-    castle.defenses = [];
-    castle.magic = [];
-    rollDefenses(state.expense);
-    show("wallDefenses", defensesText(state.expense));
+    runGenerationField("moat", () => {
+        setGenContext("moat");
+        const moat = pick(10, MOAT, "moatMod").entry;
+        castle.moat = moat[1];
+        let moatText = format(moat);
+        if (moat[1] !== __("None")) {
+            moatText += `${__(" Width: ")}${lookup(MOAT_WIDTH, rollDie(20))[1]}${__(". Depth: ")}${lookup(MOAT_DEPTH, rollDie(20))[1]}.`;
+        }
+        show("moat", moatText);
+    });
 
-    setGenContext("moat");
-    const moat = pick(10, MOAT, "moatMod").entry;
-    castle.moat = moat[1];
-    let moatText = format(moat);
-    if (moat[1] !== __("None")) {
-        moatText += `${__(" Width: ")}${lookup(MOAT_WIDTH, rollDie(20))[1]}${__(". Depth: ")}${lookup(MOAT_DEPTH, rollDie(20))[1]}.`;
-    }
-    show("moat", moatText);
-
-    setGenContext("gatehouses");
-    const gates = 1 + (castle.barbican !== __("None") ? 1 : 0) + (castle.concentric ? 1 : 0);
-    const lines = [];
-    for (let i = 0; i < gates; i++) {
-        const label = i === 0 ? __("Main wall") : (i === 1 && castle.barbican !== __("None") ? __("Barbican") : __("Outer wall"));
-        lines.push(`<b>${label}:</b> ${describe(lookup(GATEHOUSE, rollDie(20)))}`);
-    }
-    show("gatehouses", `${lines.join("<br>")}<br><b>${__("Optional features:")}</b> ${GATEHOUSE_FEATURES.join("; ")}.`);
+    runGenerationField("gatehouses", () => {
+        setGenContext("gatehouses");
+        const gates = 1 + (castle.barbican !== __("None") ? 1 : 0) + (castle.concentric ? 1 : 0);
+        const lines = [];
+        for (let i = 0; i < gates; i++) {
+            const label = i === 0 ? __("Main wall") : (i === 1 && castle.barbican !== __("None") ? __("Barbican") : __("Outer wall"));
+            lines.push(`<b>${label}:</b> ${describe(lookup(GATEHOUSE, rollDie(20)))}`);
+        }
+        show("gatehouses", `${lines.join("<br>")}<br><b>${__("Optional features:")}</b> ${GATEHOUSE_FEATURES.join("; ")}.`);
+    });
 
     rollTable("barracks", 20, BARRACKS);
 
-    setGenContext("outbuildings");
-    const outbuildings = Array.from({ length: castle.bsm + 1 }, () => lookup(OUTBUILDING_SIZE, rollDie(20)));
-    show("outbuildings", `<b>${plural(outbuildings.length, __("outbuilding"))}</b>${__(" (base size modifier ")}${castle.bsm} + 1).<br>${outbuildings.map((item, i) => `<b>${__("Outbuilding ")}${i + 1}.</b> ${item[1]} - ${item[2]}`).join("<br>")}<br><b>${__("Possible purposes:")}</b> ${OUTBUILDING_PURPOSES.join(", ")}${__(". Servant's Quarters are required here if the keep has none.")}`);
+    runGenerationField("outbuildings", () => {
+        setGenContext("outbuildings");
+        const outbuildings = Array.from({ length: castle.bsm + 1 }, () => lookup(OUTBUILDING_SIZE, rollDie(20)));
+        show("outbuildings", `<b>${plural(outbuildings.length, __("outbuilding"))}</b>${__(" (base size modifier ")}${castle.bsm} + 1).<br>${outbuildings.map((item, i) => `<b>${__("Outbuilding ")}${i + 1}.</b> ${item[1]} - ${item[2]}`).join("<br>")}<br><b>${__("Possible purposes:")}</b> ${OUTBUILDING_PURPOSES.join(", ")}${__(". Servant's Quarters are required here if the keep has none.")}`);
+    });
 }
 
 // Rolls curtain wall defenses; every Magical Defenses result adds a magical defense roll.
-function rollDefenses(rolls) {
+function rollDefenses(rolls, target = state.castle) {
     const castle = state.castle;
 
     for (let i = 0; i < rolls; i++) {
         const defense = lookup(WALL_DEFENSES, rollDie(6));
         if (defense[1] === __("Magical Defenses")) {
-            castle.magic.push(lookup(MAGICAL_DEFENSES, rollDie(6)));
-        } else if (!castle.defenses.includes(defense[1])) {
-            castle.defenses.push(defense[1]);
+            target.magic.push(lookup(MAGICAL_DEFENSES, rollDie(6)));
+        } else if (
+            !target.defenses.includes(defense[1]) &&
+            (target === castle || !castle.defenses.includes(defense[1]))
+        ) {
+            target.defenses.push(defense[1]);
         }
     }
 }
@@ -1077,41 +1142,61 @@ function defensesText(rolls) {
 
 function strongholdValues() {
     const castle = state.castle;
-    const keep = state.keep;
-
-    setGenContext("extraTowers");
-    const extraTowers = rollDie(8);
-    for (let i = 0; i < extraTowers; i++) {
-        castle.towers.push(rollTower());
-    }
-    show("extraTowers", `<b>+${plural(extraTowers, __("tower"))}</b>${__(" (1d8) added to the castle's curtain wall towers.")}`);
-
-    setGenContext("styleAmplification");
-    const amplification = lookup(STYLE_AMPLIFICATION, rollDie(12));
-    show("styleAmplification", describe(amplification));
-    const effects = amplification[3] || {};
-
-    const thickness = lookup(ADDITIONAL_THICKNESS, rollDie(20))[1];
-    show("extraThickness", `<b>+${feet(thickness)}</b> (${thickness / 5}${__(" squares) to the castle's curtain wall thickness.")}`);
-    setGenContext("extraHeight");
-    const heightRoll = lookup(ADDITIONAL_HEIGHT, rollDie(20))[1];
-    show("extraHeight", `<b>+${feet(heightRoll)}</b> (${heightRoll / 5}${__(" squares) to the castle's curtain wall height.")}`);
-
-    setGenContext("brutalDefenses");
-    show("brutalDefenses", describe(lookup(BRUTAL_DEFENSES, rollDie(20))));
-
-    setGenContext("styleAmplification");
-    for (let i = 0; i < (effects.extraDefense || 0); i++) {
-        rollDefenses(1);
-    }
-    for (let i = 0; i < (effects.magic || 0); i++) {
-        castle.magic.push(lookup(MAGICAL_DEFENSES, rollDie(6)));
-    }
-    (effects.defenses || []).forEach(name => {
-        if (!castle.defenses.includes(name)) {
-            castle.defenses.push(name);
-        }
+    runGenerationField("extraTowers", () => {
+        setGenContext("extraTowers");
+        const extraTowers = rollDie(8);
+        state.extraTowers = Array.from({ length: extraTowers }, rollTower);
+        show("extraTowers", `<b>+${plural(extraTowers, __("tower"))}</b>${__(" (1d8) added to the castle's curtain wall towers.")}`);
     });
+
+    runGenerationField("styleAmplification", () => {
+        setGenContext("styleAmplification");
+        const amplification = lookup(STYLE_AMPLIFICATION, rollDie(12));
+        show("styleAmplification", describe(amplification));
+        const effects = amplification[3] || {};
+        state.styleAmplification = effects;
+        state.styleTowers = Array.from({ length: effects.towers || 0 }, rollTower);
+        castle.amplifiedDefenses = [];
+        castle.amplifiedMagic = [];
+
+        for (let i = 0; i < (effects.extraDefense || 0); i++) {
+            rollDefenses(1, {
+                defenses: castle.amplifiedDefenses,
+                magic: castle.amplifiedMagic
+            });
+        }
+        for (let i = 0; i < (effects.magic || 0); i++) {
+            castle.amplifiedMagic.push(lookup(MAGICAL_DEFENSES, rollDie(6)));
+        }
+        (effects.defenses || []).forEach(name => {
+            if (!castle.defenses.includes(name) && !castle.amplifiedDefenses.includes(name)) {
+                castle.amplifiedDefenses.push(name);
+            }
+        });
+    });
+
+    runGenerationField("extraThickness", () => {
+        setGenContext("extraThickness");
+        state.strongholdThickness = lookup(ADDITIONAL_THICKNESS, rollDie(20))[1];
+        show("extraThickness", `<b>+${feet(state.strongholdThickness)}</b> (${state.strongholdThickness / 5}${__(" squares) to the castle's curtain wall thickness.")}`);
+    });
+
+    runGenerationField("extraHeight", () => {
+        setGenContext("extraHeight");
+        state.strongholdHeight = lookup(ADDITIONAL_HEIGHT, rollDie(20))[1];
+        show("extraHeight", `<b>+${feet(state.strongholdHeight)}</b> (${state.strongholdHeight / 5}${__(" squares) to the castle's curtain wall height.")}`);
+    });
+
+    rollTable("brutalDefenses", 20, BRUTAL_DEFENSES);
+    runGenerationField("upgradeSummary", renderUpgradeSummary);
+}
+
+function renderUpgradeSummary() {
+    const castle = state.castle;
+    const keep = state.keep;
+    const effects = state.styleAmplification || {};
+    const thickness = state.strongholdThickness;
+    const heightRoll = state.strongholdHeight;
 
     const above = clamp(keep.above + (effects.keepFloors || 0), 1, 99);
     const floorsText = `${above} ${above === 1 ? __("above-ground floor") : __("above-ground floors")}${keep.cellar || effects.keepFloors < 0 ? __(" and a cellar") : ""}`;
@@ -1123,17 +1208,13 @@ function strongholdValues() {
     const wallStep = effects.wallThickness || 0;
     const wallThickness = castle.thickness + thickness + wallStep;
     const wallHeight = Math.max(10, castle.height + heightRoll + (effects.wallHeight || 0));
-    const towerBonus = castle.towers.length ? effects.towerHeight || 0 : 0;
-    const towerCount = castle.towers.length + (effects.towers || 0);
+    const towerCount = castle.towers.length + state.extraTowers.length + state.styleTowers.length + (effects.towers || 0);
+    const towerBonus = towerCount ? effects.towerHeight || 0 : 0;
     const entry = effects.fortifiedEntries ? __("Reinforced heavy door with a portcullis and drawbridge") : keep.entry;
     const moat = effects.greatMoat
         ? `${pickRandom(MOAT.slice(1))[1]}${__(", 35 ft. wide and 40 ft. deep")}`
         : castle.moat;
     const barbican = effects.fortifiedEntries ? __("Drawbridge, gatehouse, walled approach and a second drawbridge (Grand gatehouses)") : castle.barbican;
-
-    for (let i = 0; i < (effects.towers || 0); i++) {
-        castle.towers.push(rollTower());
-    }
 
     const lines = [
         __("<b>Keep</b>"),
@@ -1147,7 +1228,12 @@ function strongholdValues() {
         `${__("Towers: ")}${towerCount}${__(" in total")}${effects.roundTowers ? __(", all round") : ""}${effects.towerArea ? `${__(", floor area +")}${effects.towerArea}${__(" squares")}` : ""}${towerBonus ? `, +${towerBonus}${__(" ft. height")}` : ""}`,
         `${__("Barbican: ")}${barbican}`,
         `${__("Moat: ")}${moat}`,
-        `${__("Curtain wall defenses: ")}${[...castle.defenses, ...castle.magic.map(item => `${__("Magical Defenses (")}${item[1]})`)].join(", ") || __("None")}`
+        `${__("Curtain wall defenses: ")}${[
+            ...castle.defenses,
+            ...(castle.amplifiedDefenses || []),
+            ...castle.magic.map(item => `${__("Magical Defenses (")}${item[1]})`),
+            ...(castle.amplifiedMagic || []).map(item => `${__("Magical Defenses (")}${item[1]})`)
+        ].join(", ") || __("None")}`
     ];
 
     if (effects.note) {

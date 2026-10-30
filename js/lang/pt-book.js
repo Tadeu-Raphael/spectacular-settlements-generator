@@ -1,5 +1,6 @@
 // Portuguese (pt-BR) translation of the book content, keyed by the English text.
-window.I18N_DATA = Object.assign(window.I18N_DATA || {}, {"Very Small":"Muito Pequeno",
+window.I18N_DATA = Object.assign(window.I18N_DATA || {}, {"Reroll this item":"Rolar este item novamente",
+"Very Small":"Muito Pequeno",
 "Small":"Pequeno",
 "Medium":"Médio",
 "Large":"Grande",

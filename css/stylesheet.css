@@ -623,6 +623,41 @@
     text-align: center;
 }
 
+.generation-content h3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.field-reroll {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.3em;
+    height: 1.3em;
+    padding: 0;
+    border: 0;
+    border-radius: 0.35rem;
+    background: transparent;
+    color: #667eea;
+    font-size: 0.9em;
+    line-height: 1;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.field-reroll:hover {
+    background: rgba(102, 126, 234, 0.12);
+}
+
+.field-reroll:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
 .generation-info {
     max-width: 900px;
 }

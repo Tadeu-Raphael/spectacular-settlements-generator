@@ -16,6 +16,9 @@ const state = {
     commercialBonus: 0
 };
 
+window.generatorModifiers = mods;
+window.generatorState = state;
+
 const SIZE_NAMES = [__("Very Small"), __("Small"), __("Medium"), __("Large"), __("Very Large")];
 const NON_COMMERCIAL_COUNT = [1, 2, 3, 4, 5];
 const COMMERCIAL_COUNT = [4, 6, 8, 10, 12];
@@ -356,6 +359,8 @@ const MARKET_DAY = [
     __("An injured guard faints."),
     __("An infested wagon arrives.")
 ];
+
+installGenerationRerolls();
 
 // Basic Information
 originValue();
