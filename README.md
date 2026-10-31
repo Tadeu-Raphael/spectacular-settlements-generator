@@ -66,8 +66,10 @@ When opening files directly, internal generator links carry the selected languag
 │   ├── header/header.js       # Shared header and its scripts
 │   └── footer/footer.js       # Shared footer and its scripts
 ├── css/
-│   └── stylesheet.css         # All of the project's styles
+│   ├── stylesheet.css         # Generator-specific styles
+│   └── paper-ui.css           # Bundled paper theme
 ├── js/
+│   ├── ui-icons.js            # Local Lucide SVG icons
 │   ├── i18n.js                # Language switcher and seeded randomness
 │   ├── lang/pt-book.js        # Portuguese translation of the book content
 │   ├── generation-info.js     # Information card (modifiers and dice rolls)
@@ -75,8 +77,12 @@ When opening files directly, internal generator links carry the selected languag
 │   ├── extras.js              # Extras card and generators
 │   ├── extras-data.js         # Appendix tables (encounters, rumors, glossary...)
 │   └── *.js                   # One generator script per settlement type
+├── assets/icons/lucide/       # Local icon subset
+├── licenses/                  # Third-party notices for the theme and icons
 └── vendor/bootstrap/          # Bootstrap 5.2.3, served locally (no CDN)
 ```
+
+The theme and icon assets are bundled in this project, so it can run on its own or as a Git submodule without loading files from the G-City repository.
 
 ## 🧩 How it works
 

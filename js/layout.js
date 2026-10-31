@@ -1,7 +1,5 @@
 const layoutScriptUrl = document.currentScript.src;
 const appRoot = new URL("../", layoutScriptUrl);
-const gcityRepositoryId = "Tadeu-Raphael/g-city";
-const githubPagesHome = "https://tadeu-raphael.github.io/g-city/";
 
 function loadScript(path) {
     const source = new URL(path, document.baseURI).href;
@@ -16,52 +14,27 @@ function loadScript(path) {
     });
 }
 
-function isGcityGithubPages() {
-    return location.protocol === "https:"
-        && location.hostname.toLowerCase() === "tadeu-raphael.github.io"
-        && /^\/g-city(?:\/|$)/i.test(location.pathname);
-}
+function configureGcityHomeLink() {
+    const isGcityModule = /\/generators\/spectacular-settlements\/$/i.test(appRoot.pathname);
+    if (!isGcityModule) return;
+    const homeUrl = new URL("../../index.html", appRoot).href;
 
-function isLocalDevelopment() {
-    const hostname = location.hostname.toLowerCase();
-    return location.protocol === "file:"
-        || (["http:", "https:"].includes(location.protocol)
-            && (["localhost", "127.0.0.1", "::1"].includes(hostname) || hostname.endsWith(".localhost")));
-}
-
-function verifyLocalGcityRepository() {
-    return new Promise(resolve => {
-        const marker = document.createElement("script");
-        marker.src = new URL("../../../js/gcity-repository-marker.js", layoutScriptUrl).href;
-        marker.onload = () => {
-            const isGcityRepository = document.documentElement.dataset.gcityRepository === gcityRepositoryId;
-            delete document.documentElement.dataset.gcityRepository;
-            marker.remove();
-            resolve(isGcityRepository);
-        };
-        marker.onerror = () => {
-            marker.remove();
-            resolve(false);
-        };
-        document.head.appendChild(marker);
+    document.querySelectorAll("[data-gcity-home]").forEach(link => {
+        link.href = homeUrl;
+        link.hidden = false;
     });
 }
 
-async function configureGcityHomeLink() {
-    let homeUrl = null;
-    const isGcityModule = /\/generators\/spectacular-settlements\/$/i.test(appRoot.pathname);
+async function loadTheme() {
+    document.documentElement.dataset.paper = "cream";
 
-    if (isGcityGithubPages()) {
-        homeUrl = githubPagesHome;
-    } else if (isLocalDevelopment() && isGcityModule && await verifyLocalGcityRepository()) {
-        homeUrl = new URL("../../index.html", appRoot).href;
-    }
-
-    document.querySelectorAll("[data-gcity-home]").forEach(link => {
-        if (homeUrl) {
-            link.href = homeUrl;
-            link.hidden = false;
-        }
+    await new Promise((resolve, reject) => {
+        const stylesheet = document.createElement("link");
+        stylesheet.rel = "stylesheet";
+        stylesheet.href = new URL("../css/paper-ui.css", layoutScriptUrl).href;
+        stylesheet.onload = resolve;
+        stylesheet.onerror = () => reject(new Error(`Could not load stylesheet ${stylesheet.href}.`));
+        document.head.appendChild(stylesheet);
     });
 }
 
@@ -100,10 +73,37 @@ async function loadLayoutComponent(containerId, componentPath, componentName) {
     if (window.I18N) window.I18N.apply(container);
 }
 
+function groupGenerationFields() {
+    if (document.documentElement.dataset.paper !== "cream") return;
+
+    document.querySelectorAll(".generation-content .col").forEach(column => {
+        let element = column.firstElementChild;
+
+        while (element) {
+            const result = element.matches("h3") ? element.nextElementSibling : null;
+            if (result && result.matches("p")) {
+                const field = document.createElement("div");
+                field.className = "generated-field";
+                element.before(field);
+                field.append(element, result);
+                element = field.nextElementSibling;
+                continue;
+            }
+
+            element = element.nextElementSibling;
+        }
+
+        if (column.querySelector(".generated-field")) {
+            column.classList.add("generation-fields");
+        }
+    });
+}
+
 async function loadPageLayout() {
+    await loadTheme();
     await loadLayoutComponent("site-header", "components/header/header.js", "SPECTACULAR_HEADER_COMPONENT");
     await loadLayoutComponent("site-footer", "components/footer/footer.js", "SPECTACULAR_FOOTER_COMPONENT");
-    await configureGcityHomeLink();
+    configureGcityHomeLink();
 
     if (window.I18N) window.I18N.apply(document);
 
@@ -113,6 +113,7 @@ async function loadPageLayout() {
     }
 
     if (window.I18N) window.I18N.apply(document);
+    groupGenerationFields();
 
     if (typeof window.refreshGenerationRerollButtons === "function") {
         window.refreshGenerationRerollButtons();
@@ -120,6 +121,7 @@ async function loadPageLayout() {
     if (typeof window.renderGenerationInfo === "function") {
         window.renderGenerationInfo();
     }
+    await loadScript(new URL("ui-icons.js", layoutScriptUrl).href);
     preserveFileLanguageOnLinks();
 }
 

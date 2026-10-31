@@ -732,12 +732,22 @@ function districtsValue() {
 }
 
 function clearDistrictFields() {
+    const fields = new Set();
+
     document.querySelectorAll(".generated-district").forEach(element => {
         if (element.id) {
             discardGenerationReroll(element.id);
         }
-        element.remove();
+
+        const field = element.closest(".generated-field");
+        if (field) {
+            fields.add(field);
+        } else {
+            element.remove();
+        }
     });
+
+    fields.forEach(field => field.remove());
 }
 
 function renderDistrictFields(types) {
@@ -752,7 +762,20 @@ function renderDistrictFields(types) {
         heading.className = "generated-district";
         paragraph.id = id;
         paragraph.className = "generated-district";
-        anchor.after(heading, paragraph);
+        if (document.documentElement.dataset.paper === "cream") {
+            const field = document.createElement("div");
+            field.className = "generated-field";
+            field.append(heading, paragraph);
+
+            const anchorField = anchor.closest(".generated-field");
+            if (anchorField) {
+                anchorField.after(field);
+            } else {
+                anchor.after(field);
+            }
+        } else {
+            anchor.after(heading, paragraph);
+        }
         anchor = paragraph;
         runGenerationField(id, () => show(id, buildDistrict(id, type)));
     });
