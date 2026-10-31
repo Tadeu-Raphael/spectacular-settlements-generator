@@ -422,6 +422,27 @@
     color: #fffdf8;
 }
 
+[data-paper="cream"] .generation-actions .reset-btn .ui-icon,
+[data-paper="cream"] .generation-actions .btn-success .ui-icon,
+[data-paper="cream"] .generation-actions .btn-danger .ui-icon {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+}
+
+[data-paper="cream"] .generation-button--danger,
+[data-paper="cream"] .btn-danger {
+    border-color: var(--danger);
+    background: var(--danger);
+    color: #fff;
+}
+
+[data-paper="cream"] .generation-button--danger:hover,
+[data-paper="cream"] .btn-danger:hover {
+    border-color: #8f1d18;
+    background: #8f1d18;
+    color: #fff;
+}
+
 [data-paper="cream"] .generation-button--back,
 [data-paper="cream"] .btn-outline-secondary {
     border-color: var(--edge);

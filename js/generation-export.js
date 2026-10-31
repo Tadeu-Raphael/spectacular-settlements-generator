@@ -1,9 +1,5 @@
-function exportGeneration() {
-    const content = document.querySelector(".generation-content");
-    const figures = content.querySelectorAll(".fortress-figure");
-    figures.forEach(item => { item.style.display = "none"; });
-    const lines = [];
-    const pageType = document.body.classList.contains("extras-page")
+function getGenerationPageType() {
+    return document.body.classList.contains("extras-page")
         ? "Extras"
         : document.body.classList.contains("villages-page")
         ? "Village"
@@ -16,25 +12,27 @@ function exportGeneration() {
                     : document.body.classList.contains("fortresses-page")
                         ? { keep: "Keep", castle: "Castle", stronghold: "Stronghold" }[document.body.dataset.fortress]
                         : "Trading Post";
+}
 
-    for (const heading of content.querySelectorAll("h2")) {
-        lines.push(heading.innerText.trim());
+window.getGenerationPageType = getGenerationPageType;
 
-        let element = heading.nextElementSibling;
-        while (element && element.tagName !== "H2") {
-            if (element.tagName === "H3") {
-                const result = element.nextElementSibling;
-                if (result?.tagName === "P") {
-                    lines.push("", `${element.innerText.trim()}:`, result.innerText.trim());
-                }
-            }
-            element = element.nextElementSibling;
+function exportGeneration() {
+    const content = document.querySelector(".generation-content");
+    const lines = [];
+
+    for (const heading of content.querySelectorAll("h2, h3")) {
+        if (heading.tagName === "H2") {
+            lines.push(heading.innerText.trim());
+            continue;
         }
 
-        lines.push("");
+        const result = heading.nextElementSibling;
+        if (result?.tagName === "P") {
+            lines.push("", `${heading.innerText.trim()}:`, result.innerText.trim());
+        }
     }
 
-    figures.forEach(item => { item.style.display = ""; });
+    lines.push("");
 
     if (typeof formatGenerationInfoText === "function") {
         lines.push(...formatGenerationInfoText());
@@ -44,6 +42,7 @@ function exportGeneration() {
         lines.push(...formatExtrasText());
     }
 
+    const pageType = getGenerationPageType();
     const title = t("{0} Generation").replace("{0}", t(pageType));
     const file = new Blob(["\uFEFF", `${title}\r\n\r\n`, lines.join("\r\n")], {
         type: "text/plain;charset=utf-8"

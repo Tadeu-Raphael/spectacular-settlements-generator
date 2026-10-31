@@ -20,6 +20,7 @@ Roll full settlements for your tabletop adventures: trading posts, villages, tow
 - ✦ **Extras.** Encounters, rumors, taverns (Tavern Builder), local production, scene details, adventure hooks and personnel issues. Extra terms are highlighted and open a description when clicked.
 - 🗺️ **Fortress figures.** Keeps, castles and strongholds include reference drawings for plans, walls and layouts.
 - 💾 **TXT export.** Download everything shown on the page, including the Information summary and the extras you rolled.
+- 📄 **PDF export.** Download an original, paginated worksheet with boxed result fields, roll information and extras.
 - 🌐 **Bilingual.** Click the Brazil or UK/USA flag in the footer. Your choice is remembered, the browser language is the default (English if unknown), and switching language replays the *same* roll in the other language.
 
 ## 📋 Generators
@@ -74,6 +75,7 @@ When opening files directly, internal generator links carry the selected languag
 │   ├── lang/pt-book.js        # Portuguese translation of the book content
 │   ├── generation-info.js     # Information card (modifiers and dice rolls)
 │   ├── generation-export.js   # TXT export
+│   ├── generation-pdf-export.js # PDF report export
 │   ├── extras.js              # Extras card and generators
 │   ├── extras-data.js         # Appendix tables (encounters, rumors, glossary...)
 │   └── *.js                   # One generator script per settlement type

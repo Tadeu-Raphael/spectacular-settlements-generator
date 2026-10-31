@@ -44,6 +44,10 @@ window.SPECTACULAR_FOOTER_COMPONENT = {
                 </div>
             </footer>`;
 
-        return ["vendor/bootstrap/js/bootstrap.bundle.min.js", "js/generation-export.js"];
+        return [
+            "vendor/bootstrap/js/bootstrap.bundle.min.js",
+            "js/generation-export.js",
+            "js/generation-pdf-export.js"
+        ];
     }
 };

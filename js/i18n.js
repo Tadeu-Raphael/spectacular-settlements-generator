@@ -95,6 +95,7 @@
         "Generation actions": "Ações da geração",
         "🎲 Roll again": "🎲 Gerar novamente",
         "⬇ Export TXT": "⬇ Exportar TXT",
+        "⬇ Export PDF": "⬇ Exportar PDF",
         "← Main menu": "← Menu principal",
         "Generation information": "Informações da geração",
 
@@ -110,6 +111,7 @@
         "Die": "Dado",
         "Die result": "Resultado do dado",
         "No rolls were recorded.": "Nenhuma rolagem foi registrada.",
+        "No generated results are available yet.": "Ainda não há resultados gerados.",
 
         // Extras card
         "Optional content from Appendices A-D. Terms marked with a purple ✦ are extras and open a description when clicked.": "Conteúdo opcional dos Apêndices A-D. Termos marcados com um ✦ roxo são extras e abrem uma descrição ao clicar.",
